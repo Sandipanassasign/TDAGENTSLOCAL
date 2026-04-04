@@ -1,0 +1,52 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Fetch Context",
+      "type": "shell",
+      "command": "node scripts/context-fetcher.js ${input:fetchInput}",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Refresh Defects",
+      "type": "shell",
+      "command": "node scripts/context-fetcher.js --defects",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Load Current Sprint",
+      "type": "shell",
+      "command": "node scripts/context-fetcher.js --sprint",
+      "group": "build",
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared",
+        "clear": true
+      },
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "fetchInput",
+      "type": "promptString",
+      "description": "Enter Jira key and/or confluence:PAGEID (e.g. BANK-4521 or BANK-4521 confluence:112233)",
+      "default": "BANK-"
+    }
+  ]
+}

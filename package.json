@@ -1,0 +1,14 @@
+{
+  "name": "qea-banking-agents",
+  "version": "1.0.0",
+  "description": "QEA Banking Domain — AI Agent Workspace with Auto Context Fetching",
+  "main": "scripts/context-fetcher.js",
+  "scripts": {
+    "fetch": "node scripts/context-fetcher.js",
+    "defects": "node scripts/context-fetcher.js --defects",
+    "sprint": "node scripts/context-fetcher.js --sprint"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.0"
+  }
+}

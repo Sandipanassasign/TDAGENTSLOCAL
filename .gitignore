@@ -1,0 +1,12 @@
+# Secrets — never commit
+scripts/.env
+
+# Auto-fetched context — contains live project data
+context/
+
+# Node
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
