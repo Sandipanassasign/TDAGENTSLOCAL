@@ -185,6 +185,88 @@ Setup is complete once you see the green checkmarks.
 
 ---
 
+## No LLM API Key Required
+
+> **These agents do not need an OpenAI, Anthropic, or any other LLM API key.**
+> They run entirely through your **GitHub Copilot** subscription — the same one
+> you already use for code completion in VS Code.
+
+Each `.agent.md` file contains `model: copilot` in its frontmatter:
+
+```yaml
+---
+name: TestCaseGenerator
+model: copilot        ← routes through GitHub Copilot, no external API key needed
+tools:
+  - codebase
+---
+```
+
+The only credentials you need are:
+- A **GitHub Copilot** subscription (individual or enterprise via your org)
+- **Jira / Confluence API tokens** — only for the context-fetcher script that
+  pre-loads project data. If you don't have these, see [Using Agents Without Jira/Confluence](#using-agents-without-jiraconfluence) below.
+
+### Minimum requirements to get agents working
+
+| What you need | Where to get it |
+|---------------|----------------|
+| VS Code 1.99+ | [code.visualstudio.com](https://code.visualstudio.com) |
+| GitHub Copilot extension | VS Code Extensions panel → search "GitHub Copilot" |
+| GitHub Copilot subscription | Your GitHub account settings, or ask your IT/admin team to assign a seat |
+| Node.js 16+ | Only needed to run the context-fetcher script — not required for the agents themselves |
+
+### Using Agents Without Jira/Confluence
+
+If you do not have Jira or Confluence API access, you can still use all 7 agents
+by writing your own context files manually:
+
+**Step 1 — Create the context folder (if it doesn't exist)**
+
+```bash
+mkdir context
+```
+
+**Step 2 — Create `context/current-story.md` manually**
+
+Paste your story details in plain text. The agents only need the content — the
+format does not have to be exact. Example:
+
+```markdown
+# Story: BANK-4521 — Fund Transfer via NEFT
+
+## Summary
+As a retail banking customer, I want to transfer funds to another bank account
+using NEFT so that I can make payments outside business hours.
+
+## Acceptance Criteria
+- AC1: User can enter beneficiary IFSC code and account number
+- AC2: Minimum transfer amount is ₹1; maximum is ₹10,00,000 per transaction
+- AC3: User receives SMS confirmation with UTR number on success
+- AC4: Transaction is rolled back and user is notified if NEFT batch processing fails
+- AC5: Transfer is rejected if beneficiary account is inactive
+```
+
+**Step 3 — Open Copilot Chat and invoke an agent**
+
+```
+@TestCaseGenerator generate all test cases
+```
+
+The agent reads `context/current-story.md` automatically via its `codebase` tool
+and generates output based on what you wrote — no API, no scripts needed.
+
+**Other context files you can create manually:**
+
+| File | Used by | What to put in it |
+|------|---------|-------------------|
+| `context/current-story.md` | All agents | Paste story details, ACs, description |
+| `context/current-brd.md` | BRDMapper, APITestAgent, TraceabilityMatrix | Paste BRD sections or requirements |
+| `context/defect-history.md` | DefectAnalyzer | List recent bugs: ID, summary, root cause |
+| `context/current-sprint.md` | RegressionSelector | List open sprint stories with summaries |
+
+---
+
 ## Custom Agents — VS Code Copilot Integration
 
 All 7 agents live in `.github/agents/` as `.agent.md` files. VS Code Copilot
