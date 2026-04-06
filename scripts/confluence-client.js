@@ -4,15 +4,14 @@ const https = require('https');
 
 function confRequest(path) {
   return new Promise((resolve, reject) => {
-    const auth = Buffer.from(
-      `${process.env.CONFLUENCE_EMAIL}:${process.env.CONFLUENCE_API_TOKEN}`
-    ).toString('base64');
+    const pat = process.env.CONFLUENCE_PAT;
+    if (!pat) throw new Error('CONFLUENCE_PAT is not set in scripts/.env');
 
     const url = new URL(process.env.CONFLUENCE_BASE_URL + path);
     https.get({
       hostname: url.hostname,
       path: url.pathname + url.search,
-      headers: { 'Authorization': `Basic ${auth}`, 'Accept': 'application/json' }
+      headers: { 'Authorization': `Bearer ${pat}`, 'Accept': 'application/json' }
     }, (res) => {
       let data = '';
       res.on('data', c => data += c);

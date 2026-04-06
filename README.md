@@ -136,33 +136,37 @@ Open `scripts/.env` and fill in your values:
 
 ```env
 # ─── Jira ───────────────────────────────────────────────
-JIRA_BASE_URL=https://yourcompany.atlassian.net
-JIRA_EMAIL=your.email@company.com
-JIRA_API_TOKEN=ATATxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+JIRA_BASE_URL=https://jira.yourcompany.com
+JIRA_PAT=your_jira_personal_access_token_here
 JIRA_PROJECT_KEY=BANK
 
 # ─── Confluence ─────────────────────────────────────────
-CONFLUENCE_BASE_URL=https://yourcompany.atlassian.net/wiki
-CONFLUENCE_EMAIL=your.email@company.com
-CONFLUENCE_API_TOKEN=ATATxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+CONFLUENCE_BASE_URL=https://confluence.yourcompany.com
+CONFLUENCE_PAT=your_confluence_personal_access_token_here
 CONFLUENCE_SPACE_KEY=QEA
 ```
 
-**Where to find each value:**
+**How to generate your Personal Access Token (PAT):**
+
+| Tool | Steps |
+|------|-------|
+| **Jira PAT** | Jira → click your **avatar** (top-right) → **Personal Access Tokens** → **Create token** → copy it |
+| **Confluence PAT** | Confluence → click your **avatar** (top-right) → **Personal Access Tokens** → **Create token** → copy it |
+
+> PATs are available on **Jira Server 8.14+** and **Confluence Server 7.9+**.
+> If you don't see "Personal Access Tokens" in your profile menu, ask your Jira/Confluence admin to enable them.
+
+**Where to find the other values:**
 
 | Variable | Where to find it |
 |----------|-----------------|
-| `JIRA_BASE_URL` | Your browser URL on any Jira page, up to `.atlassian.net` |
-| `JIRA_EMAIL` | The email you use to log in to Atlassian |
-| `JIRA_API_TOKEN` | https://id.atlassian.com/manage-profile/security/api-tokens → Create API token |
+| `JIRA_BASE_URL` | Your browser URL on any Jira page, up to the hostname (e.g. `https://jira.yourcompany.com`) |
 | `JIRA_PROJECT_KEY` | The prefix before `-` in your ticket numbers (e.g. `BANK` from `BANK-1234`) |
-| `CONFLUENCE_BASE_URL` | Same as Jira base URL but with `/wiki` appended |
-| `CONFLUENCE_EMAIL` | Same as Jira email (same Atlassian account) |
-| `CONFLUENCE_API_TOKEN` | Same token as Jira (one token works for both) |
-| `CONFLUENCE_SPACE_KEY` | Found in Confluence URL: `.../wiki/spaces/QEA/...` — the `QEA` part |
+| `CONFLUENCE_BASE_URL` | Your browser URL on any Confluence page, up to the hostname (e.g. `https://confluence.yourcompany.com`) |
+| `CONFLUENCE_SPACE_KEY` | Found in Confluence URL: `.../spaces/QEA/...` — the `QEA` part |
 
 > **Security note:** `scripts/.env` is listed in `.gitignore` and will never be committed.
-> Never share this file or paste its contents into chat.
+> Never share your PAT or paste it into chat. You can revoke a PAT anytime from your profile.
 
 ### Step 5 — Test the connection
 
@@ -392,23 +396,25 @@ Access via `Ctrl+Shift+B`:
 ## Troubleshooting
 
 ### `401 Unauthorized`
-- Your `JIRA_EMAIL` or `JIRA_API_TOKEN` is wrong
-- Verify by opening `https://yourcompany.atlassian.net/rest/api/3/myself` in a browser while logged in — you should see your profile JSON
+- Your `JIRA_PAT` or `CONFLUENCE_PAT` is incorrect or has been revoked
+- Verify the PAT is still active: Jira/Confluence → avatar → **Personal Access Tokens**
+- Test manually: open `https://jira.yourcompany.com/rest/api/2/myself` in your browser while logged in — you should see your profile JSON
 
 ### `404 Not Found`
 - `JIRA_BASE_URL` is incorrect, or the issue key doesn't exist
-- Double-check: `https://yourcompany.atlassian.net` (no trailing slash, no `/wiki`)
+- Double-check there is no trailing slash: `https://jira.yourcompany.com`
+
+### `JIRA_PAT is not set`
+- You have not created `scripts/.env` yet — run `cp scripts/.env.example scripts/.env` and fill in your PATs
 
 ### `ECONNREFUSED` or network timeout
-- VDI firewall may be blocking outbound HTTPS to `*.atlassian.net`
-- Ask your project lead to whitelist `*.atlassian.net` on port 443
-- If on self-hosted Jira/Confluence (e.g. `jira.yourcompany.com`), ensure VPN is active
+- VDI firewall may be blocking outbound HTTPS to your Jira/Confluence server
+- Ensure VPN is active if Jira/Confluence is on an internal network
+- Ask your project lead to whitelist the Jira/Confluence hostname on port 443
 
-### Self-hosted Jira / Confluence (not Atlassian Cloud)
-If your Jira URL is `jira.yourcompany.com` (not `.atlassian.net`):
-1. Use your Windows/network username and password instead of an API token
-2. Change the REST API path in `scripts/jira-client.js` from `/rest/api/3/` to `/rest/api/2/`
-3. Auth method stays the same (`Basic base64(username:password)`)
+### PAT not available in profile menu
+- PATs require **Jira Server 8.14+** / **Confluence Server 7.9+**
+- Ask your Jira/Confluence admin to enable Personal Access Tokens in the admin panel
 
 ### `Acceptance Criteria field is empty`
 Jira stores custom fields under `customfield_XXXXX` IDs that differ per instance.
